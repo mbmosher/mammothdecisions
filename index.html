@@ -1,0 +1,2522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mammoth — Make Better Decisions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage: #7a9e7e;
+    --sage-light: #b8d4bc;
+    --sage-pale: #eef4ef;
+    --sage-deep: #4a6b4e;
+    --beige: #f5f0e8;
+    --beige-mid: #e8dece;
+    --beige-dark: #c8b89a;
+    --brown: #6b5744;
+    --brown-light: #9c8272;
+    --text-dark: #2c2419;
+    --text-mid: #5a4a3a;
+    --text-light: #8a7565;
+    --white: #fefcf8;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(44,36,25,0.08);
+    --shadow-lg: 0 8px 32px rgba(44,36,25,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--beige);
+    color: var(--text-dark);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Lora', serif;
+    font-weight: 500;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--beige-mid);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+    color: var(--sage-deep);
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-icon { font-size: 26px; }
+  .btn-back {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-back:hover { background: var(--sage-pale); color: var(--sage-deep); }
+
+  /* ── MAIN CONTENT ── */
+  .main-content {
+    flex: 1;
+    padding: 32px 24px;
+    max-width: 760px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* ── LANDING ── */
+  .landing-hero {
+    text-align: center;
+    padding: 60px 24px 40px;
+  }
+  .landing-hero .mammoth-mark {
+    font-size: 64px;
+    line-height: 1;
+    margin-bottom: 20px;
+    filter: sepia(20%);
+  }
+  .landing-hero h1 {
+    font-size: 42px;
+    color: var(--sage-deep);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .landing-hero p {
+    font-size: 17px;
+    color: var(--text-mid);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+  .auth-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--beige-mid);
+    padding: 32px;
+    max-width: 420px;
+    margin: 0 auto;
+    box-shadow: var(--shadow);
+  }
+  .auth-card h2 { font-size: 20px; margin-bottom: 20px; color: var(--text-dark); }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 6px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--beige-mid);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    background: var(--white);
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus { border-color: var(--sage); }
+  .btn-primary {
+    width: 100%;
+    background: var(--sage-deep);
+    color: var(--white);
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 8px;
+  }
+  .btn-primary:hover { background: var(--sage); }
+  .btn-primary:active { transform: scale(0.98); }
+  .auth-toggle {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--text-light);
+  }
+  .auth-toggle a {
+    color: var(--sage-deep);
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .auth-toggle a:hover { text-decoration: underline; }
+  .auth-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  /* ── DASHBOARD ── */
+  .dash-welcome {
+    margin-bottom: 28px;
+  }
+  .dash-welcome h2 { font-size: 26px; color: var(--text-dark); }
+  .dash-welcome p { color: var(--text-light); margin-top: 6px; }
+
+  .decisions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .decision-card {
+    background: var(--white);
+    border: 1px solid var(--beige-mid);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .decision-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--sage-light);
+  }
+  .decision-card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--sage-light);
+    transform: translateY(-2px);
+  }
+  .decision-card h3 {
+    font-size: 17px;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .decision-card p {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .decision-card .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--beige-mid);
+  }
+  .card-meta .strat-count {
+    font-size: 12px;
+    color: var(--text-light);
+    background: var(--beige);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .card-meta .card-date {
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: var(--beige-dark);
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s;
+  }
+  .decision-card:hover .delete-btn { opacity: 1; }
+  .delete-btn:hover { color: #b91c1c; }
+
+  .add-card {
+    background: var(--sage-pale);
+    border: 2px dashed var(--sage-light);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 140px;
+    transition: background 0.2s, border-color 0.2s;
+    text-align: center;
+  }
+  .add-card:hover { background: var(--sage-pale); border-color: var(--sage); }
+  .add-card .plus { font-size: 28px; color: var(--sage); line-height: 1; }
+  .add-card span { font-size: 14px; color: var(--sage-deep); font-weight: 500; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .empty-state .empty-icon { font-size: 56px; margin-bottom: 20px; }
+  .empty-state h3 { font-size: 22px; color: var(--text-dark); margin-bottom: 12px; }
+  .empty-state p { color: var(--text-light); max-width: 340px; margin: 0 auto 28px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(44,36,25,0.45);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 32px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+  }
+  .modal-box h2 { font-size: 22px; margin-bottom: 8px; }
+  .modal-box .modal-subtitle { color: var(--text-light); font-size: 14px; margin-bottom: 24px; }
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: var(--text-light);
+    cursor: pointer;
+    line-height: 1;
+  }
+  .modal-close:hover { color: var(--text-dark); }
+  textarea.form-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--beige-mid);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    background: var(--white);
+    color: var(--text-dark);
+    outline: none;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+  textarea.form-textarea:focus { border-color: var(--sage); }
+
+  /* ── DECISION DETAIL ── */
+  .decision-header {
+    background: var(--white);
+    border: 1px solid var(--beige-mid);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .decision-header .decision-label {
+    font-size: 12px;
+    color: var(--sage-deep);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .decision-header h2 { font-size: 26px; color: var(--text-dark); margin-bottom: 10px; line-height: 1.3; }
+  .decision-header p { color: var(--text-mid); font-size: 15px; line-height: 1.65; }
+  .decision-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--beige-mid);
+    flex-wrap: wrap;
+  }
+  .meta-pill {
+    background: var(--sage-pale);
+    color: var(--sage-deep);
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .meta-date { font-size: 13px; color: var(--text-light); }
+
+  .strategies-section h3 {
+    font-size: 20px;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+  .strategies-section .section-sub {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+  }
+  .strategies-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .strategy-tile {
+    background: var(--white);
+    border: 1.5px solid var(--beige-mid);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    position: relative;
+  }
+  .strategy-tile:hover {
+    border-color: var(--sage-light);
+    box-shadow: var(--shadow);
+    transform: translateX(3px);
+  }
+  .strategy-tile.has-response {
+    border-color: var(--sage-light);
+    background: var(--sage-pale);
+  }
+  .strategy-tile .tile-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--sage-pale);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .strategy-tile.has-response .tile-icon {
+    background: var(--sage-light);
+  }
+  .tile-info { flex: 1; min-width: 0; }
+  .tile-info h4 { font-size: 15px; font-weight: 500; color: var(--text-dark); margin-bottom: 4px; font-family: 'Lora', serif; }
+  .tile-info p { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+  .tile-badge {
+    font-size: 11px;
+    background: var(--sage);
+    color: var(--white);
+    padding: 3px 9px;
+    border-radius: 20px;
+    align-self: flex-start;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+  .tile-chevron {
+    color: var(--text-light);
+    font-size: 18px;
+    align-self: center;
+    flex-shrink: 0;
+  }
+
+  /* ── STRATEGY WORKSPACE ── */
+  .strategy-workspace {
+    background: var(--white);
+    border: 1px solid var(--beige-mid);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .workspace-header {
+    background: var(--sage-deep);
+    color: var(--white);
+    padding: 20px 24px;
+  }
+  .workspace-header .ws-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    opacity: 0.7;
+    margin-bottom: 6px;
+  }
+  .workspace-header h3 { font-family: 'Lora', serif; font-size: 20px; font-weight: 500; }
+  .workspace-body { padding: 24px; }
+  .prompt-section { margin-bottom: 28px; }
+  .prompt-section .prompt-q {
+    background: var(--beige);
+    border-left: 3px solid var(--sage);
+    padding: 14px 16px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.65;
+    margin-bottom: 0;
+    font-style: italic;
+  }
+  .response-area { margin-bottom: 24px; }
+  .response-area label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .response-area textarea {
+    width: 100%;
+    min-height: 160px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--beige-mid);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text-dark);
+    background: var(--white);
+    outline: none;
+    resize: vertical;
+    line-height: 1.65;
+    transition: border-color 0.2s;
+  }
+  .response-area textarea:focus { border-color: var(--sage); }
+  .save-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-save {
+    background: var(--sage-deep);
+    color: var(--white);
+    border: none;
+    padding: 11px 24px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn-save:hover { background: var(--sage); }
+  .btn-save:active { transform: scale(0.97); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-light);
+    border: 1.5px solid var(--beige-mid);
+    padding: 11px 20px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--sage-light); color: var(--sage-deep); }
+  .save-status {
+    font-size: 13px;
+    color: var(--sage-deep);
+    opacity: 0;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .save-status.visible { opacity: 1; }
+
+  .prompts-list { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── NOTES/HISTORY PANEL ── */
+  .saved-note {
+    background: var(--sage-pale);
+    border: 1px solid var(--sage-light);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .saved-note .note-date {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .saved-note p { font-size: 14px; color: var(--text-mid); line-height: 1.6; white-space: pre-wrap; }
+
+
+
+  .decision-header-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .btn-edit-decision {
+    background: none;
+    border: 1.5px solid var(--beige-mid);
+    color: var(--text-light);
+    padding: 7px 16px;
+    border-radius: var(--radius-sm);
+    font-family: "DM Sans", sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-edit-decision:hover { border-color: var(--sage-light); color: var(--sage-deep); }
+  .btn-mark-decided {
+    background: var(--sage-pale);
+    border: 1.5px solid var(--sage-light);
+    color: var(--sage-deep);
+    padding: 7px 16px;
+    border-radius: var(--radius-sm);
+    font-family: "DM Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .btn-mark-decided:hover { background: var(--sage-light); }
+  .decided-banner {
+    background: var(--sage-deep);
+    color: var(--white);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-top: 14px;
+    display: none;
+  }
+  .decided-banner .decided-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    margin-bottom: 6px;
+  }
+  .decided-banner p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--white);
+    white-space: pre-wrap;
+  }
+  .decided-banner.visible { display: block; }
+  .decided-tag {
+    background: var(--sage-deep);
+    color: var(--white);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .strat-category { margin-bottom: 28px; }
+  .strat-cat-header { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1.5px solid var(--beige-mid); }
+  .strat-cat-label { font-size: 14px; font-weight: 500; color: var(--sage-deep); font-family: "DM Sans", sans-serif; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
+  .strat-cat-tagline { font-size: 13px; color: var(--text-light); font-style: italic; }
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .landing-hero h1 { font-size: 30px; }
+    .landing-hero .mammoth-mark { font-size: 50px; }
+    .main-content { padding: 20px 16px; }
+    .modal-box { padding: 24px 20px; }
+    .decisions-grid { grid-template-columns: 1fr; }
+    .workspace-body { padding: 16px; }
+    .save-row { flex-direction: column; align-items: stretch; }
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--text-dark);
+    color: var(--white);
+    padding: 12px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s, transform 0.25s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── NAV TABS on detail ── */
+  .detail-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--beige-mid);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+  }
+  .detail-tab {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    text-align: center;
+  }
+  .detail-tab.active {
+    background: var(--white);
+    color: var(--text-dark);
+    font-weight: 500;
+    box-shadow: var(--shadow);
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .signout-btn {
+    background: none;
+    border: 1.5px solid var(--beige-mid);
+    color: var(--text-light);
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .signout-btn:hover { border-color: var(--sage-light); color: var(--sage-deep); }
+
+  /* ── STICKY TAB BAR ── */
+  .detail-tabs-sticky {
+    position: sticky;
+    top: 60px; /* height of .app-header */
+    z-index: 90;
+    background: var(--beige);
+    padding: 12px 0 8px;
+    margin: 0 -24px 20px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  /* ── GROUNDING TAB ── */
+  .grounding-intro {
+    background: var(--white);
+    border: 1px solid var(--beige-mid);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .grounding-intro h3 {
+    font-size: 18px;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+  .grounding-intro p {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .btn-grounding-start {
+    background: var(--sage-deep);
+    color: var(--white);
+    border: none;
+    padding: 11px 24px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-grounding-start:hover { background: var(--sage); }
+
+  /* ── GROUNDING SCREEN ── */
+  .grounding-header-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--beige-mid);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .grounding-progress {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+  .grounding-progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--beige-mid);
+    transition: background 0.3s;
+  }
+  .grounding-progress-dot.active { background: var(--sage); }
+  .grounding-progress-dot.done { background: var(--sage-light); }
+
+  .grounding-section {
+    display: none;
+    animation: gs-rise 0.4s ease forwards;
+  }
+  .grounding-section.visible { display: block; }
+
+  @keyframes gs-rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .grounding-section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 12px;
+  }
+
+  .grounding-reassurance {
+    background: #fdf6f0;
+    border-left: 3px solid var(--brown-light);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .grounding-reassurance p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-mid);
+  }
+  .grounding-reassurance p + p { margin-top: 10px; }
+
+  .grounding-body {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-mid);
+    margin-bottom: 16px;
+  }
+
+  /* Response cards (fight/flight/freeze/fawn) */
+  .gr-response-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .gr-rcard {
+    background: var(--white);
+    border: 1.5px solid var(--beige-mid);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .gr-rcard:hover { border-color: var(--sage-light); }
+  .gr-rcard.selected {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+  }
+  .gr-rcard-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .gr-rcard-title {
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-dark);
+  }
+  .gr-rcard.selected .gr-rcard-title { color: var(--sage-deep); }
+  .gr-rcard-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--beige-dark);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: transparent;
+    transition: all 0.15s;
+  }
+  .gr-rcard.selected .gr-rcard-check {
+    background: var(--sage);
+    border-color: var(--sage);
+    color: var(--white);
+  }
+  .gr-rcard-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-light);
+    margin-top: 6px;
+  }
+  .gr-rcard-quote {
+    font-style: italic;
+    color: var(--text-light);
+    margin-top: 4px;
+    font-size: 13px;
+  }
+  .gr-recognised-msg {
+    display: none;
+    background: var(--sage-pale);
+    border: 1px solid var(--sage-light);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--sage-deep);
+    margin-bottom: 16px;
+  }
+  .gr-recognised-msg.visible { display: block; }
+
+  /* Body sensation textarea */
+  .gr-sensation-box {
+    display: none;
+    margin-top: 16px;
+  }
+  .gr-sensation-box.visible { display: block; }
+  .gr-sensation-box .gr-prompt-label {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .gr-sensation-box textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--beige-mid);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-dark);
+    background: var(--white);
+    outline: none;
+    resize: vertical;
+    line-height: 1.65;
+    transition: border-color 0.2s;
+  }
+  .gr-sensation-box textarea:focus { border-color: var(--sage); }
+
+  /* 5-4-3-2-1 exercise */
+  .gr-exercise-card {
+    background: #eef3f7;
+    border: 1px solid #c8d8e4;
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+  .gr-exercise-title {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: #3a4e5c;
+    margin-bottom: 6px;
+  }
+  .gr-exercise-intro {
+    font-size: 13px;
+    color: #4a6070;
+    margin-bottom: 20px;
+    line-height: 1.7;
+  }
+  .gr-steps { display: flex; flex-direction: column; gap: 18px; }
+  .gr-step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    opacity: 0.4;
+    transition: opacity 0.3s;
+  }
+  .gr-step.current, .gr-step.done { opacity: 1; }
+  .gr-step-num {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+    color: #3a4e5c;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 28px;
+  }
+  .gr-step-content { flex: 1; }
+  .gr-step-head {
+    font-size: 14px;
+    font-weight: 500;
+    color: #3a4e5c;
+    margin-bottom: 3px;
+  }
+  .gr-step-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #4a6070;
+    margin-bottom: 8px;
+  }
+  .gr-step-textarea {
+    width: 100%;
+    min-height: 64px;
+    padding: 10px 12px;
+    border: 1.5px solid #c8d8e4;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text-dark);
+    background: var(--white);
+    outline: none;
+    resize: vertical;
+    line-height: 1.6;
+    transition: border-color 0.2s;
+    display: none;
+  }
+  .gr-step.current .gr-step-textarea,
+  .gr-step.done .gr-step-textarea { display: block; }
+  .gr-step-textarea:focus { border-color: #3a4e5c; }
+  .gr-step-done-mark {
+    display: none;
+    font-size: 12px;
+    color: var(--sage-deep);
+    font-weight: 500;
+    margin-top: 4px;
+  }
+  .gr-step.done .gr-step-done-mark { display: block; }
+  .gr-exercise-btn {
+    margin-top: 18px;
+    padding: 10px 22px;
+    background: #3a4e5c;
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .gr-exercise-btn:hover { background: #2e3e4a; }
+  .gr-exercise-btn:disabled { background: var(--beige-dark); cursor: default; }
+
+  /* Anchor question */
+  .gr-anchor-card {
+    background: var(--white);
+    border: 1px solid var(--beige-mid);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 16px;
+  }
+  .gr-anchor-q {
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+  .gr-anchor-sub {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .gr-anchor-card textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--beige-mid);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-dark);
+    background: var(--white);
+    outline: none;
+    resize: vertical;
+    line-height: 1.65;
+    transition: border-color 0.2s;
+  }
+  .gr-anchor-card textarea:focus { border-color: var(--sage); }
+
+  /* Permission / reframe blocks */
+  .gr-permission-block {
+    background: var(--beige-mid);
+    border-radius: var(--radius-sm);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .gr-permission-block p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text-mid);
+  }
+  .gr-permission-block p + p { margin-top: 10px; }
+  .gr-permission-block strong { color: var(--text-dark); font-weight: 500; }
+
+  .gr-reframe-card {
+    background: var(--sage-pale);
+    border-left: 3px solid var(--sage);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .gr-reframe-card p {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--sage-deep);
+  }
+
+  /* Not alone section */
+  .gr-not-alone {
+    background: var(--white);
+    border: 1px solid var(--beige-mid);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 16px;
+  }
+  .gr-not-alone-headline {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+  .gr-not-alone p {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text-mid);
+    margin-bottom: 14px;
+  }
+  .gr-not-alone textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--beige-mid);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-dark);
+    background: var(--white);
+    outline: none;
+    resize: vertical;
+    line-height: 1.65;
+    transition: border-color 0.2s;
+  }
+  .gr-not-alone textarea:focus { border-color: var(--sage); }
+
+  /* Ready / wrap-up */
+  .gr-ready-section {
+    background: var(--white);
+    border: 1px solid var(--beige-mid);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-top: 8px;
+  }
+  .gr-ready-section h3 {
+    font-size: 18px;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+  .gr-ready-section p {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .gr-ready-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-gr-ready {
+    background: var(--sage-deep);
+    color: var(--white);
+    border: none;
+    padding: 11px 22px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-gr-ready:hover { background: var(--sage); }
+  .btn-gr-repeat {
+    background: transparent;
+    color: var(--text-light);
+    border: 1.5px solid var(--beige-mid);
+    padding: 11px 20px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-gr-repeat:hover { border-color: var(--sage-light); color: var(--sage-deep); }
+
+  .gr-nav-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--beige-mid);
+  }
+  .btn-gr-next {
+    background: var(--sage-deep);
+    color: var(--white);
+    border: none;
+    padding: 11px 24px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-gr-next:hover { background: var(--sage); }
+  .grounding-progress-dot { cursor: pointer; }
+  .grounding-progress-dot:hover { opacity: 0.75; transform: scale(1.2); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LANDING / AUTH SCREEN ═══════════════ -->
+<div id="screen-auth" class="screen active">
+  <div class="landing-hero">
+    <div class="mammoth-mark">🦣</div>
+    <h1>Think it through,<br>all the way through.</h1>
+    <p>Mammoth guides you through proven decision-making strategies for the choices that truly matter — buying a home, changing careers, building a life.</p>
+  </div>
+  <div class="main-content" style="flex:0; padding-top:0;">
+    <div class="auth-card">
+      <h2 id="auth-title">Sign in to Mammoth</h2>
+      <div id="auth-error" class="auth-error"></div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <button class="btn-primary" onclick="authSubmit()">Send magic link</button>
+      <div class="auth-toggle">
+        Don't have an account? Magic link works for sign-up too — just enter your email.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ DASHBOARD SCREEN ═══════════════ -->
+<div id="screen-dash" class="screen">
+  <div class="app-header">
+    <div class="logo"><span class="logo-icon">🦣</span> Mammoth</div>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </div>
+  <div class="main-content">
+    <div class="dash-welcome">
+      <h2 id="dash-greeting">Good to see you.</h2>
+      <p>Each decision below holds your thinking. Pick one to continue, or start something new.</p>
+    </div>
+    <div id="decisions-container"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ DECISION DETAIL SCREEN ═══════════════ -->
+<div id="screen-detail" class="screen">
+  <div class="app-header">
+    <button class="btn-back" onclick="showDash()">← Decisions</button>
+    <div class="logo" style="font-size:18px;"><span class="logo-icon" style="font-size:20px;">🦣</span> Mammoth</div>
+    <div style="width:80px;"></div>
+  </div>
+  <div class="main-content">
+    <div class="decision-header">
+      <div class="decision-label">Current decision</div>
+      <h2 id="detail-title"></h2>
+      <p id="detail-desc"></p>
+      <div id="detail-solutions" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--beige-mid);display:none;"></div>
+      <div class="decided-banner" id="decided-banner">
+        <div class="decided-label">My conclusion</div>
+        <p id="decided-conclusion"></p>
+      </div>
+      <div class="decision-meta">
+        <span class="meta-pill" id="detail-strat-count"></span>
+        <span class="meta-date" id="detail-date"></span>
+      </div>
+      <div class="decision-header-actions">
+        <button class="btn-edit-decision" onclick="openEditDecisionModal()">✏ Edit</button>
+        <button class="btn-mark-decided" id="btn-mark-decided" onclick="openDecidedModal()">✓ Mark as decided</button>
+      </div>
+    </div>
+
+    <div class="detail-tabs-sticky">
+      <div class="detail-tabs">
+        <button class="detail-tab active" onclick="switchTab('strategies', this)">Strategies</button>
+        <button class="detail-tab" onclick="switchTab('notes', this)">My Notes</button>
+        <button class="detail-tab" onclick="switchTab('grounding', this)">Feeling Overwhelmed?</button>
+      </div>
+    </div>
+
+    <div id="tab-strategies" class="tab-panel active">
+      <div class="strategies-section">
+        <h3>Choose a strategy</h3>
+        <p class="section-sub">Each strategy approaches your decision from a different angle. Try several — the overlap is often where clarity lives.</p>
+        <div class="strategies-grid" id="strategies-grid"></div>
+      </div>
+    </div>
+
+    <div id="tab-notes" class="tab-panel">
+      <div id="notes-container"></div>
+    </div>
+
+    <div id="tab-grounding" class="tab-panel">
+      <div class="grounding-intro">
+        <h3>It's okay to slow down first.</h3>
+        <p>Big decisions can bring up big feelings. Before working through strategies, you can take a few minutes to ground yourself — name what's happening in your body, interrupt the stress loop, and find a calmer place to think from.</p>
+        <p>This won't take long, and it often changes what you notice when you return to the decision.</p>
+        <button class="btn-grounding-start" onclick="openGrounding()">Take me through it →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ GROUNDING SCREEN ═══════════════ -->
+<div id="screen-grounding" class="screen">
+  <div class="grounding-header-bar">
+    <button class="btn-back" onclick="closeGrounding()">← Back</button>
+    <div class="logo" style="font-size:18px;"><span class="logo-icon" style="font-size:20px;">🦣</span> Mammoth</div>
+    <div style="width:80px;"></div>
+  </div>
+  <div class="main-content">
+
+    <!-- Progress dots -->
+    <div class="grounding-progress">
+      <div class="grounding-progress-dot active" id="gdot-0" onclick="grGoToSection(0)" title="Slow down"></div>
+      <div class="grounding-progress-dot" id="gdot-1" onclick="grGoToSection(1)" title="Body response"></div>
+      <div class="grounding-progress-dot" id="gdot-2" onclick="grGoToSection(2)" title="Grounding exercise"></div>
+      <div class="grounding-progress-dot" id="gdot-3" onclick="grGoToSection(3)" title="Find solid ground"></div>
+      <div class="grounding-progress-dot" id="gdot-4" onclick="grGoToSection(4)" title="A note on urgency"></div>
+      <div class="grounding-progress-dot" id="gdot-5" onclick="grGoToSection(5)" title="When ready"></div>
+    </div>
+
+    <!-- SECTION 0: Acknowledge -->
+    <div class="grounding-section visible" id="gsec-0">
+      <div class="grounding-section-label">First — acknowledge what's actually happening</div>
+      <h2 style="font-family:'Lora',serif;font-size:26px;font-weight:500;color:var(--text-dark);margin-bottom:16px;">Before we go anywhere,<br><em style="color:var(--text-mid);">let's slow down.</em></h2>
+      <div class="grounding-reassurance">
+        <p>Feeling stuck when your values conflict is not a sign that something is wrong with you. It's a sign that both things you're weighing actually matter. If neither mattered, there would be no conflict.</p>
+        <p>The discomfort you're feeling right now is a signal, not a verdict. It doesn't mean you're deciding wrong — it means you're taking this seriously, as you should.</p>
+      </div>
+      <p class="grounding-body">You don't need to resolve this today. This page isn't about solving anything yet — it's about creating enough stillness to think from.</p>
+      <div class="gr-nav-row">
+        <button class="btn-gr-next" onclick="grNextSection(1)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- SECTION 1: Stress response cards -->
+    <div class="grounding-section" id="gsec-1">
+      <div class="grounding-section-label">What might be happening in your body right now</div>
+      <p class="grounding-body">When decisions feel urgent and our values conflict, the nervous system can respond as if we're under threat. Researchers call these <strong>fight, flight, freeze, and fawn</strong> responses — and they show up in decision-making more than most of us realise.</p>
+      <p class="grounding-body" style="margin-bottom:14px;">Click on anything that feels familiar right now.</p>
+
+      <div class="gr-response-cards">
+        <div class="gr-rcard" id="gr-card-fight" onclick="grToggleResponse('fight')">
+          <div class="gr-rcard-head">
+            <div class="gr-rcard-title">Fight</div>
+            <div class="gr-rcard-check">&#10003;</div>
+          </div>
+          <div class="gr-rcard-body">Feeling irritable, certain, or pressured to resolve this <em>right now</em>. Thinking feels urgent and slightly frantic.</div>
+          <div class="gr-rcard-quote">"I just need to make a decision and stop going back and forth."</div>
+        </div>
+
+        <div class="gr-rcard" id="gr-card-flight" onclick="grToggleResponse('flight')">
+          <div class="gr-rcard-head">
+            <div class="gr-rcard-title">Flight</div>
+            <div class="gr-rcard-check">&#10003;</div>
+          </div>
+          <div class="gr-rcard-body">Avoiding thinking about it. Distracting yourself. Wanting someone else to just tell you what to do.</div>
+          <div class="gr-rcard-quote">"I'll deal with this later" — on repeat.</div>
+        </div>
+
+        <div class="gr-rcard" id="gr-card-freeze" onclick="grToggleResponse('freeze')">
+          <div class="gr-rcard-head">
+            <div class="gr-rcard-title">Freeze</div>
+            <div class="gr-rcard-check">&#10003;</div>
+          </div>
+          <div class="gr-rcard-body">Your mind goes blank when you try to think it through. Stuck. Unable to move in any direction.</div>
+          <div class="gr-rcard-quote">"I genuinely don't know what I want."</div>
+        </div>
+
+        <div class="gr-rcard" id="gr-card-fawn" onclick="grToggleResponse('fawn')">
+          <div class="gr-rcard-head">
+            <div class="gr-rcard-title">Fawn</div>
+            <div class="gr-rcard-check">&#10003;</div>
+          </div>
+          <div class="gr-rcard-body">Leaning toward what others want, or what feels safest socially — even when it doesn't reflect your own needs.</div>
+          <div class="gr-rcard-quote">"I don't want to disappoint anyone."</div>
+        </div>
+      </div>
+
+      <div class="gr-recognised-msg" id="gr-recognised-msg">
+        Good — naming it helps. None of these responses are wrong. They're your nervous system trying to protect you. Once you can see which one is present, it tends to lose some of its grip.
+      </div>
+
+      <div class="gr-sensation-box" id="gr-sensation-box">
+        <div class="gr-prompt-label">Explore the feeling</div>
+        <textarea id="gr-sensation-text" placeholder="Where do you feel this response in your body? Does it have a sound it needs to make, or a movement it needs to make? Find a place where you feel safe to give the feeling expression. Consider phoning a trusted friend to express yourself."></textarea>
+      </div>
+
+      <div class="gr-nav-row">
+        <button class="btn-gr-next" onclick="grNextSection(2)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- SECTION 2: 5-4-3-2-1 grounding exercise -->
+    <div class="grounding-section" id="gsec-2">
+      <div class="grounding-section-label">A short grounding exercise — two minutes</div>
+      <p class="grounding-body" style="margin-bottom:16px;">This interrupts the stress loop by gently pulling attention back into your present surroundings. Work through each step, jotting down what you notice before moving on.</p>
+
+      <div class="gr-exercise-card">
+        <div class="gr-exercise-title">The 5-4-3-2-1 anchor</div>
+        <div class="gr-exercise-intro">Press "next step" as you complete each one. There's no rush.</div>
+
+        <div class="gr-steps">
+          <div class="gr-step current" id="gstep-0">
+            <div class="gr-step-num">5</div>
+            <div class="gr-step-content">
+              <div class="gr-step-head">Things you can see</div>
+              <div class="gr-step-desc">Look around slowly. Name five things in your environment.</div>
+              <textarea class="gr-step-textarea" id="gr-sense-see" placeholder="What can you see right now?"></textarea>
+              <div class="gr-step-done-mark">✓ Done</div>
+            </div>
+          </div>
+
+          <div class="gr-step" id="gstep-1">
+            <div class="gr-step-num">4</div>
+            <div class="gr-step-content">
+              <div class="gr-step-head">Things you can feel</div>
+              <div class="gr-step-desc">Notice four physical sensations — your feet, weight in chair, temperature, texture.</div>
+              <textarea class="gr-step-textarea" id="gr-sense-feel" placeholder="What physical sensations do you notice?"></textarea>
+              <div class="gr-step-done-mark">✓ Done</div>
+            </div>
+          </div>
+
+          <div class="gr-step" id="gstep-2">
+            <div class="gr-step-num">3</div>
+            <div class="gr-step-content">
+              <div class="gr-step-head">Things you can hear</div>
+              <div class="gr-step-desc">Listen for three distinct sounds — near and distant.</div>
+              <textarea class="gr-step-textarea" id="gr-sense-hear" placeholder="What sounds can you hear?"></textarea>
+              <div class="gr-step-done-mark">✓ Done</div>
+            </div>
+          </div>
+
+          <div class="gr-step" id="gstep-3">
+            <div class="gr-step-num">2</div>
+            <div class="gr-step-content">
+              <div class="gr-step-head">Things you can smell</div>
+              <div class="gr-step-desc">Identify two smells — however faint. Breathe slowly and wait.</div>
+              <textarea class="gr-step-textarea" id="gr-sense-smell" placeholder="What can you smell?"></textarea>
+              <div class="gr-step-done-mark">✓ Done</div>
+            </div>
+          </div>
+
+          <div class="gr-step" id="gstep-4">
+            <div class="gr-step-num">1</div>
+            <div class="gr-step-content">
+              <div class="gr-step-head">Thing you can taste</div>
+              <div class="gr-step-desc">Notice one taste — whatever's present in your mouth right now.</div>
+              <textarea class="gr-step-textarea" id="gr-sense-taste" placeholder="What can you taste?"></textarea>
+              <div class="gr-step-done-mark">✓ Done</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="gr-exercise-btn" id="gr-exercise-btn" onclick="grAdvanceStep()">Next step</button>
+      </div>
+
+      <div class="gr-nav-row">
+        <button class="btn-gr-next" onclick="grNextSection(3)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Anchor question + Not alone -->
+    <div class="grounding-section" id="gsec-3">
+      <div class="grounding-section-label">Find one solid thing</div>
+      <p class="grounding-body" style="margin-bottom:14px;">When everything feels uncertain, it helps to locate something you <em>do</em> know — even something small. This isn't about the decision itself. It's about finding ground to stand on.</p>
+
+      <div class="gr-anchor-card">
+        <div class="gr-anchor-q">What's one thing you know for certain, even if it's small?</div>
+        <div class="gr-anchor-sub">It could be something about yourself, about the situation, or just something true right now. There's no right answer.</div>
+        <textarea id="gr-anchor-text" placeholder="e.g. I know I care about both of these things. / I know the move is happening regardless. / I know I want to make a choice I can live with."></textarea>
+      </div>
+
+      <div class="gr-not-alone" style="margin-top:20px;">
+        <div class="gr-not-alone-headline">You don't have to make this decision alone.</div>
+        <p>Sometimes we think we have to carry the weight of a decision by ourselves, but talking to trusted friends and mentors can help us reflect in unique ways. If nothing else, an ally can be a source of solace in a difficult time.</p>
+        <div style="font-size:13px;color:var(--text-light);margin-bottom:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.3px;">Can you list 3 people you could talk to about the decision you're facing?</div>
+        <textarea id="gr-allies-text" placeholder="e.g. My sister — she's been through something similar&#10;My mentor at work&#10;My friend who's good at helping me see things clearly"></textarea>
+      </div>
+
+      <div class="gr-nav-row">
+        <button class="btn-gr-next" onclick="grNextSection(4)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- SECTION 4: Permission + Reframe -->
+    <div class="grounding-section" id="gsec-4">
+      <div class="grounding-section-label">A note on urgency</div>
+      <div class="gr-permission-block">
+        <p>Decisions that feel urgent often aren't — or at least, they're not as immediate as the nervous system makes them feel. Research on what psychologists call the <strong>impact bias</strong> consistently shows that we overestimate how bad outcomes will feel, and underestimate our own ability to adapt.</p>
+        <p>This doesn't mean your decision doesn't matter. It does. But it means you probably have a little more time than the pressure suggests. <strong>Deciding from a calmer place almost always produces a better decision than deciding to escape the discomfort.</strong></p>
+        <p>You don't need to resolve this today.</p>
+      </div>
+
+      <div class="grounding-section-label" style="margin-top:24px;">A small reframe to sit with</div>
+      <p class="grounding-body" style="margin-bottom:12px;">Instead of asking <em>"what is the right decision?"</em> — which often has no clean answer — try asking:</p>
+      <div class="gr-reframe-card">
+        <p>"What decision could I make that I would respect myself for — regardless of how it turns out?"</p>
+      </div>
+      <p class="grounding-body">This shifts the focus from outcome (which you can't fully control) to process (which you can). Decisions made from values tend to carry less regret, even when the outcome is hard.</p>
+
+      <div class="gr-nav-row">
+        <button class="btn-gr-next" onclick="grNextSection(5)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- SECTION 5: Ready check -->
+    <div class="grounding-section" id="gsec-5">
+      <div class="grounding-section-label">When you're ready</div>
+      <div class="gr-ready-section">
+        <h3>How are you feeling now?</h3>
+        <p>There's no hurry. When the weight feels a little lighter — when you can think again rather than just feel — the strategy map is waiting. It will help you look at your actual decision with clearer eyes.</p>
+        <p>If you'd like to revisit any of the exercises, you can do that too.</p>
+        <div class="gr-ready-row">
+          <button class="btn-gr-ready" onclick="grFinishAndReturn()">I'm ready — back to strategies</button>
+          <button class="btn-gr-repeat" onclick="grRepeat()">Repeat an exercise</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ STRATEGY WORKSPACE SCREEN ═══════════════ -->
+<div id="screen-workspace" class="screen">
+  <div class="app-header">
+    <button class="btn-back" onclick="showDetail()">← Back</button>
+    <div class="logo" style="font-size:18px;"><span class="logo-icon" style="font-size:20px;">🦣</span> Mammoth</div>
+    <div style="width:80px;"></div>
+  </div>
+  <div class="main-content">
+    <div class="strategy-workspace">
+      <div class="workspace-header">
+        <div class="ws-label" id="ws-decision-label"></div>
+        <h3 id="ws-strategy-name"></h3>
+      </div>
+      <div class="workspace-body">
+        <div class="prompts-list" id="ws-prompts"></div>
+        <div class="save-row">
+          <button class="btn-save" onclick="saveResponse()">Save my thinking</button>
+          <span class="save-status" id="save-status">✓ Saved</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ EDIT DECISION MODAL ═══════════════ -->
+<div class="modal-overlay" id="edit-decision-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeEditModal()">×</button>
+    <h2>Edit decision</h2>
+    <p class="modal-subtitle">Update the details for this decision.</p>
+    <div class="form-group">
+      <label>Decision name</label>
+      <input type="text" id="edit-decision-name" maxlength="80">
+    </div>
+    <div class="form-group">
+      <label>Describe the problem</label>
+      <textarea class="form-textarea" id="edit-decision-desc"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Describe possible solutions</label>
+      <textarea class="form-textarea" id="edit-decision-solutions"></textarea>
+    </div>
+    <button class="btn-primary" onclick="saveEditDecision()">Save changes</button>
+  </div>
+</div>
+
+<!-- ═══════════════ MARK AS DECIDED MODAL ═══════════════ -->
+<div class="modal-overlay" id="decided-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeDecidedModal()">×</button>
+    <h2>What did you decide?</h2>
+    <p class="modal-subtitle">Describe your conclusion. What are you going to do, and what tipped you toward it?</p>
+    <div class="form-group">
+      <label>Your conclusion</label>
+      <textarea class="form-textarea" id="decided-conclusion-input" style="min-height:130px;" placeholder="e.g. I am going to accept the offer. The 10/10/10 exercise made clear that short-term anxiety was masking a long-term fit…"></textarea>
+    </div>
+    <button class="btn-primary" onclick="saveDecided()">Mark as decided</button>
+  </div>
+</div>
+
+<!-- ═══════════════ NEW DECISION MODAL ═══════════════ -->
+<div class="modal-overlay" id="new-decision-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h2>Name this decision</h2>
+    <p class="modal-subtitle">Give it a name and describe what you're working through. You can always come back and add more detail.</p>
+    <div class="form-group">
+      <label>Decision name</label>
+      <input type="text" id="new-decision-name" placeholder="e.g. Move to Denver, Accept the job offer…" maxlength="80">
+    </div>
+    <div class="form-group">
+      <label>Describe the problem</label>
+      <textarea class="form-textarea" id="new-decision-desc" placeholder="What is the situation? What makes this hard? What's at stake?"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Describe possible solutions</label>
+      <textarea class="form-textarea" id="new-decision-solutions" placeholder="What options are you currently considering? List as many as come to mind."></textarea>
+    </div>
+    <button class="btn-primary" onclick="createDecision()">Start thinking →</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ═══════════════════════════════════════════════════════════════
+// MAMMOTH — Supabase data + auth layer
+// Placeholders %%SUPABASE_URL%% and %%SUPABASE_KEY%% are injected
+// at build time by build.js — no real keys live in this file.
+// ═══════════════════════════════════════════════════════════════
+
+const SUPABASE_URL = '%%SUPABASE_URL%%';
+const SUPABASE_KEY = '%%SUPABASE_KEY%%';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// currentUser holds the Supabase session user object (or null).
+// currentDecisionId / currentStrategyId are UI state, unchanged.
+let currentUser = null;
+let currentDecisionId = null;
+let currentStrategyId = null;
+
+// ─── On page load: restore session if one exists ───────────────
+(async function init() {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await showDash();
+  } else {
+    showScreen('screen-auth');
+  }
+
+  // Keep currentUser in sync if the session changes (token refresh, tab focus, etc.)
+  db.auth.onAuthStateChange((_event, session) => {
+    currentUser = session ? session.user : null;
+    if (!currentUser) showScreen('screen-auth');
+  });
+})();
+
+// ═══ STRATEGIES (static content — unchanged) ══════════════════
+
+const STRATEGY_CATEGORIES = [
+  {
+    id: 'narrow-frame',
+    label: 'Confront a narrow frame',
+    tagline: "Use these to come up with alternatives you haven't thought of yet",
+    strategies: [
+      { id:'widen-options', name:'Widen your options', icon:'🔭', tagline:"Break out of either/or thinking",
+        prompts:[
+          "List every option you are currently considering. Be complete.",
+          "Now imagine that NONE of those options are available. They all just disappeared. What would you do instead? List 3–5 genuinely different alternatives.",
+          "Is there a third door — some combination, hybrid, or partial path you haven't considered?",
+          "What would the boldest, most unconventional version of this decision look like? What would a cautious, conservative version look like?"
+        ]},
+      { id:'combine-options', name:'Combine your options', icon:'🔀', tagline:"Find the and instead of the or",
+        prompts:[
+          "List the options you are weighing and what is most appealing about each one.",
+          "What do you want from Option A that Option B doesn't give you — and vice versa?",
+          "Is there a way to get the best of both? Could you sequence them (do one, then the other)? Could you do both partially?",
+          "Design a perfect-10 option that somehow captures what you value most across all your alternatives. Even if it is not currently realistic, what does it look like?"
+        ]}
+    ]
+  },
+  {
+    id: 'confirmation-bias',
+    label: 'Overcome confirmation bias',
+    tagline: 'Reality-test your assumptions',
+    strategies: [
+      { id:'instinct', name:'Trust your instinct', icon:'💡', tagline:"Listen to — and interrogate — your gut",
+        prompts:[
+          "When you imagine yourself choosing your leading option and waking up tomorrow having committed to it — what is your gut reaction? Describe it physically if you can.",
+          "Now imagine choosing the opposite. What changes? What does your body or emotions do?",
+          "Where do you think this instinct is coming from? Fear? Excitement? Past experience? Habit?",
+          "Is your gut trying to protect you from something real — or from something imagined? How can you tell?"
+        ]},
+      { id:'ask-expert', name:'Ask an expert', icon:'🗣️', tagline:"Get a base rate from someone who has been there",
+        prompts:[
+          "Do you know anyone who has gone through something meaningfully similar to this decision? Who comes to mind — even someone you are not close to?",
+          "When you reach out, ask them for base rate information: not what they think you should do, but what typically happens in situations like this. What does the experience usually look like? What do people tend to underestimate or get wrong?",
+          "What did you learn? How does that information compare to your current assumptions about how this will unfold?",
+          "Does this change your confidence level in any of your options, or surface a risk you hadn't fully considered?"
+        ]},
+      { id:'ooch', name:'Ooch', icon:'👣', tagline:"Try it on before fully committing",
+        prompts:[
+          "Is there a micro version of this decision you could try — something small, fast, and cheap that would let you get real information before committing fully? Describe what that might look like.",
+          "What is the minimum viable experiment? What would you do, for how long, and at what cost — financial, time, or emotional?",
+          "What specific question would this experiment answer for you? What would a positive signal look like? What would a negative one look like?",
+          "After imagining (or running) this experiment, what do you now know that you didn't before? Does it shift your lean?"
+        ]}
+    ]
+  },
+  {
+    id: 'short-term-emotion',
+    label: 'Calm short-term emotions',
+    tagline: 'Attain distance before deciding',
+    strategies: [
+      { id:'10-10-10', name:'10 / 10 / 10', icon:'⏳', tagline:"View the decision across time",
+        prompts:[
+          "Describe your leading option. What are the realistic outcomes if you choose it?",
+          "How would you feel about this choice in 10 days? What immediate joys or regrets might you experience?",
+          "How would you feel about this choice in 10 months? What will have changed — and what will still be unresolved?",
+          "How would you feel about this choice in 10 years? Looking back from a decade out, which option seems most aligned with who you want to be?",
+          "Now go back and repeat the 10/10/10 questions for your next possible option. Compare the two sets of responses side by side. How do you feel about the outcomes of each — and how does that comparison shape your perspective?"
+        ]},
+      { id:'advise-friend', name:'Advise a friend', icon:'🤝', tagline:"Borrow an outsider's perspective",
+        prompts:[
+          "Imagine your closest friend came to you with this exact dilemma — same stakes, same options, same uncertainty. Write out their situation as if you were hearing it for the first time.",
+          "What would you honestly advise them to do? Why? Don't filter yourself.",
+          "What concerns would you raise that they might be too close to the situation to see?",
+          "Now turn that advice on yourself. How does hearing it from the outside change anything?"
+        ]},
+      { id:'core-priorities', name:'Core priorities', icon:'🧭', tagline:"Let your values lead the way",
+        prompts:[
+          "What are the 3–5 things you value most in this area of your life? (e.g. security, freedom, family closeness, growth, stability) Be honest — not aspirational.",
+          "For each option, how well does it serve each of those priorities? Walk through the trade-offs.",
+          "If you could only use one core priority as a tie-breaker, which would it be — and what does that tell you?",
+          "Is there anything on your priority list that is really someone else's value, not your own? If so, what changes when you set it aside?"
+        ]}
+    ]
+  },
+  {
+    id: 'overconfidence',
+    label: 'Check overconfidence',
+    tagline: "If you already know what to do but are worried about outcomes, try these",
+    strategies: [
+      { id:'premortem', name:'Pre-mortem', icon:'🔍', tagline:"Imagine failure before it happens",
+        prompts:[
+          "Pick the option you are currently leaning toward. Now imagine it is 3 years from now and things went badly wrong. What does wrong look like in vivid detail?",
+          "Why did it fail? List every plausible reason — be specific, not vague.",
+          "Which of those failure reasons are within your control? Which are not?",
+          "What could you do today — before committing — to reduce the risk of those failures? What early warning signs should you watch for?"
+        ]},
+      { id:'preparade', name:'Pre-parade', icon:'🎉', tagline:"Prepare for unexpected success",
+        prompts:[
+          "Imagine it is 3 years from now and your decision turned out wildly better than you dared hope. Paint that picture in detail.",
+          "What made it so successful? What did you do right in the early days?",
+          "What new challenges or demands would that success create — things you might not be ready for?",
+          "What do you need to set up now to handle that kind of success well?"
+        ]},
+      { id:'boundaries', name:'Set boundaries & tripwires', icon:'🚦', tagline:"Build checkpoints into your path",
+        prompts:[
+          "What are you most worried about getting stuck in — a bad situation you would drift into without realizing it? Describe that scenario.",
+          "What specific, observable signal would tell you it is time to stop, pivot, or reassess? Try to make it concrete (a date, a number, a behavior).",
+          "If you commit to this path, what are your non-negotiables — the conditions under which you would exit or change course no matter what?",
+          "Write out one or two specific tripwires you are committing to: If X happens by Y date, I will Z. Make them clear enough that your future self cannot rationalize around them."
+        ]}
+    ]
+  }
+];
+
+const STRATEGIES = STRATEGY_CATEGORIES.flatMap(c => c.strategies);
+
+const SOLUTIONS_FEED = {
+  'widen-options':   [1, 2, 3],
+  'combine-options': [3]
+};
+
+// ═══ AUTH ═════════════════════════════════════════════════════
+// Magic-link only. One flow handles both new and returning users.
+
+function clearAuthError() {
+  const el = document.getElementById('auth-error');
+  el.style.display = 'none'; el.textContent = '';
+}
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+// authSubmit — sends a magic link via Supabase Auth.
+// Passwords are never stored or transmitted by our code.
+// Supabase auto-creates an account on first use if the email is new.
+async function authSubmit() {
+  clearAuthError();
+  const email = document.getElementById('auth-email').value.trim().toLowerCase();
+  if (!email || !email.includes('@')) {
+    showAuthError('Please enter a valid email address.');
+    return;
+  }
+
+  const btn = document.querySelector('.btn-primary');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  const { error } = await db.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: window.location.origin,
+    }
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Send magic link';
+
+  if (error) {
+    showAuthError(error.message);
+    return;
+  }
+
+  document.querySelector('.auth-card').innerHTML = `
+    <h2 style="margin-bottom:16px;">Check your email ✉️</h2>
+    <p style="color:var(--text-mid);line-height:1.7;">
+      We sent a magic link to <strong>${esc(email)}</strong>.<br>
+      Click it to sign in — no password needed.
+    </p>`;
+}
+
+// signOut — ends the Supabase session and returns to auth screen.
+async function signOut() {
+  await db.auth.signOut();
+  currentUser = null;
+  currentDecisionId = null;
+  showScreen('screen-auth');
+}
+
+// ═══ SCREENS ══════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+async function showDash() { await renderDash(); showScreen('screen-dash'); }
+async function showDetail() { await renderDetail(); showScreen('screen-detail'); }
+
+// ═══ DASHBOARD ════════════════════════════════════════════════
+// renderDash — queries the decisions table filtered by the
+// authenticated user's ID via RLS (no client-side filtering needed).
+async function renderDash() {
+  if (!currentUser) return;
+
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+  // Fetch display_name from user metadata (set at signup)
+  const name = currentUser.user_metadata?.display_name
+    || currentUser.email.split('@')[0];
+  document.getElementById('dash-greeting').textContent = `${greeting}, ${name}.`;
+
+  const { data: decisions, error } = await db
+    .from('decisions')
+    .select('id, name, description, solutions, created_at, decided, conclusion, responses')
+    .order('created_at', { ascending: false });
+
+  if (error) { console.error('renderDash error:', error); return; }
+
+  const container = document.getElementById('decisions-container');
+
+  if (!decisions || decisions.length === 0) {
+    container.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🌿</div>
+      <h3>No decisions yet</h3>
+      <p>Mammoth is ready when you are. Start with a decision that's been weighing on you.</p>
+      <button class="btn-primary" style="width:auto;padding:12px 28px;" onclick="openNewDecisionModal()">Begin your first decision</button>
+    </div>`;
+    return;
+  }
+
+  let html = '<div class="decisions-grid">';
+  decisions.forEach(d => {
+    const responses = d.responses || {};
+    const stratCount = Object.keys(responses).length;
+    const date = new Date(d.created_at).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
+    const preview = (d.description || 'No description.').slice(0, 120);
+    html += `<div class="decision-card" onclick="openDecision('${d.id}')">
+      <button class="delete-btn" id="del-${d.id}" onclick="event.stopPropagation();confirmDelete('${d.id}',this)" title="Delete">×</button>
+      <h3>${esc(d.name)}${d.decided ? ' <span class="decided-tag">Decided</span>' : ''}</h3>
+      <p>${esc(preview)}${d.description && d.description.length > 120 ? '…' : ''}</p>
+      <div class="card-meta">
+        <span class="strat-count">${stratCount} ${stratCount===1?'strategy':'strategies'} explored</span>
+        <span class="card-date">${date}</span>
+      </div>
+    </div>`;
+  });
+  html += `<div class="add-card" onclick="openNewDecisionModal()"><div class="plus">+</div><span>New decision</span></div></div>`;
+  container.innerHTML = html;
+}
+
+// ═══ SOLUTIONS LIST (pure UI, unchanged logic) ════════════════
+function renderSolutionsList(d, el) {
+  const lines = [];
+  if (d.solutions && d.solutions.trim()) {
+    d.solutions.split('\n').forEach(l => { if (l.trim()) lines.push({ text: l.trim(), source: 'manual' }); });
+  }
+  Object.entries(SOLUTIONS_FEED).forEach(([stratId, promptIdxs]) => {
+    const answers = d.responses && d.responses[stratId];
+    if (!answers) return;
+    promptIdxs.forEach(idx => {
+      const ans = answers[idx];
+      if (!ans || !ans.trim()) return;
+      ans.split('\n').forEach(l => {
+        if (l.trim()) lines.push({ text: l.trim(), source: stratId });
+      });
+    });
+  });
+  if (lines.length === 0) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  const sourceLabel = { 'manual': '', 'widen-options': '🔭', 'combine-options': '🔀' };
+  let html = '<span style="font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-light);font-weight:500;">Possible solutions</span>';
+  html += '<ul style="margin-top:8px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:5px;">';
+  lines.forEach(item => {
+    const badge = sourceLabel[item.source] ? `<span style="font-size:11px;margin-left:6px;opacity:0.55;">${sourceLabel[item.source]}</span>` : '';
+    html += `<li style="display:flex;align-items:baseline;gap:8px;font-size:14px;color:var(--text-mid);line-height:1.5;">
+      <span style="color:var(--sage);flex-shrink:0;font-size:12px;margin-top:2px;">●</span>
+      <span>${esc(item.text)}${badge}</span>
+    </li>`;
+  });
+  html += '</ul>';
+  el.innerHTML = html;
+}
+
+// ═══ DECISION DETAIL ══════════════════════════════════════════
+async function openDecision(id) {
+  currentDecisionId = id;
+  await showDetail();
+}
+
+// renderDetail — fetches the single decision row for currentDecisionId.
+// RLS ensures only the owning user can read it.
+async function renderDetail() {
+  if (!currentUser || !currentDecisionId) return;
+
+  const { data: d, error } = await db
+    .from('decisions')
+    .select('*')
+    .eq('id', currentDecisionId)
+    .single();
+
+  if (error || !d) { console.error('renderDetail error:', error); return; }
+
+  document.getElementById('detail-title').textContent = d.name;
+  document.getElementById('detail-desc').textContent = d.description || '';
+  const solEl = document.getElementById('detail-solutions');
+  renderSolutionsList(d, solEl);
+
+  const responses = d.responses || {};
+  const stratCount = Object.keys(responses).length;
+  document.getElementById('detail-strat-count').textContent =
+    `${stratCount} ${stratCount===1?"strategy":"strategies"} explored`;
+
+  const date = new Date(d.created_at).toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('detail-date').textContent = `Started ${date}`;
+
+  const banner = document.getElementById('decided-banner');
+  const concEl = document.getElementById('decided-conclusion');
+  const decidedBtn = document.getElementById('btn-mark-decided');
+  if (d.decided && d.conclusion && d.conclusion.trim()) {
+    banner.classList.add('visible');
+    concEl.textContent = d.conclusion;
+    decidedBtn.textContent = '✎ Edit conclusion';
+  } else {
+    banner.classList.remove('visible');
+    concEl.textContent = '';
+    decidedBtn.textContent = '✓ Mark as decided';
+  }
+
+  let grid = '';
+  STRATEGY_CATEGORIES.forEach(cat => {
+    grid += `<div class="strat-category">
+      <div class="strat-cat-header">
+        <h4 class="strat-cat-label">${cat.label}</h4>
+        <p class="strat-cat-tagline">${cat.tagline}</p>
+      </div>`;
+    cat.strategies.forEach(s => {
+      const hasResponse = responses[s.id] && responses[s.id].some(r => r && r.trim());
+      grid += `<div class="strategy-tile${hasResponse?' has-response':''}" onclick="openStrategy('${s.id}')">
+        <div class="tile-icon">${s.icon}</div>
+        <div class="tile-info"><h4>${s.name}</h4><p>${s.tagline}</p></div>
+        ${hasResponse?'<span class="tile-badge">Done</span>':'<span class="tile-chevron">›</span>'}
+      </div>`;
+    });
+    grid += '</div>';
+  });
+  document.getElementById('strategies-grid').innerHTML = grid;
+  renderNotesTab(d);
+  switchTab('strategies', document.querySelector('.detail-tab'));
+}
+
+function renderNotesTab(d) {
+  const container = document.getElementById('notes-container');
+  const responses = d.responses || {};
+  const gr = d.grounding || {};
+  let html = '', hasAny = false;
+
+  const grFields = [
+    { key: 'sensationText', label: 'How I felt it in my body' },
+    { key: 'anchorText', label: 'Something I know for certain' },
+    { key: 'alliesText', label: 'People I can talk to' },
+    { key: 'seeText', label: '5 things I could see' },
+    { key: 'feelText', label: '4 things I could feel' },
+    { key: 'hearText', label: '3 things I could hear' },
+    { key: 'smellText', label: '2 things I could smell' },
+    { key: 'tasteText', label: '1 thing I could taste' },
+  ];
+  const grHasAny = grFields.some(f => gr[f.key] && gr[f.key].trim());
+  const grResponses = gr.responses || [];
+  const grHasResponses = grResponses.length > 0;
+
+  if (grHasAny || grHasResponses) {
+    hasAny = true;
+    html += `<div style="margin-bottom:28px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <span style="font-size:20px;">🌿</span>
+        <h4 style="font-size:15px;font-weight:500;font-family:'Lora',serif;color:var(--text-dark);">Navigating your emotions</h4>
+      </div>`;
+    if (grHasResponses) {
+      html += `<div class="saved-note"><div class="note-date">Stress responses identified</div><p>${esc(grResponses.join(', '))}</p></div>`;
+    }
+    grFields.forEach(f => {
+      if (gr[f.key] && gr[f.key].trim()) {
+        html += `<div class="saved-note"><div class="note-date">${f.label}</div><p>${esc(gr[f.key])}</p></div>`;
+      }
+    });
+    html += '</div>';
+  }
+
+  STRATEGIES.forEach(s => {
+    const answers = responses[s.id];
+    if (!answers || !answers.some(a => a && a.trim())) return;
+    hasAny = true;
+    html += `<div style="margin-bottom:28px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <span style="font-size:20px;">${s.icon}</span>
+        <h4 style="font-size:15px;font-weight:500;font-family:'Lora',serif;color:var(--text-dark);">${s.name}</h4>
+      </div>`;
+    s.prompts.forEach((p, i) => {
+      const ans = answers[i];
+      if (!ans || !ans.trim()) return;
+      html += `<div class="saved-note">
+        <div class="note-date">Q${i+1}: ${esc(p.slice(0,70))}${p.length>70?'…':''}</div>
+        <p>${esc(ans)}</p>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  if (!hasAny) html = `<div class="empty-state" style="padding:40px 0;">
+    <div class="empty-icon">📝</div><h3>No notes yet</h3>
+    <p>As you work through strategies, your saved responses will appear here.</p>
+  </div>`;
+  container.innerHTML = html;
+}
+
+async function switchTab(tab, el) {
+  document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+
+  if (tab === 'notes' || tab === 'grounding') {
+    // Re-fetch decision to get fresh data, then re-render
+    const { data: d } = await db
+      .from('decisions').select('*').eq('id', currentDecisionId).single();
+    if (d) {
+      renderNotesTab(d);
+      if (tab === 'grounding') renderGroundingTabState(d);
+    }
+  }
+}
+
+// ═══ STRATEGY WORKSPACE ═══════════════════════════════════════
+async function openStrategy(stratId) {
+  currentStrategyId = stratId;
+  const strategy = STRATEGIES.find(s => s.id === stratId);
+
+  const { data: d, error } = await db
+    .from('decisions').select('name, responses').eq('id', currentDecisionId).single();
+  if (error || !d) return;
+
+  document.getElementById('ws-decision-label').textContent = d.name;
+  document.getElementById('ws-strategy-name').textContent = `${strategy.icon} ${strategy.name}`;
+
+  const saved = (d.responses && d.responses[stratId]) || [];
+  let html = '';
+  strategy.prompts.forEach((p, i) => {
+    html += `<div class="prompt-section">
+      <div class="prompt-q">${esc(p)}</div>
+      <div class="response-area" style="margin-top:12px;">
+        <label>Your thinking</label>
+        <textarea id="resp-${i}" placeholder="Write your honest thoughts here…">${esc(saved[i] || '')}</textarea>
+      </div>
+    </div>`;
+  });
+  document.getElementById('ws-prompts').innerHTML = html;
+  document.getElementById('save-status').classList.remove('visible');
+  showScreen('screen-workspace');
+}
+
+// saveResponse — fetches the current responses JSONB column, merges
+// in the new answers for this strategy, then writes back atomically.
+async function saveResponse() {
+  const strategy = STRATEGIES.find(s => s.id === currentStrategyId);
+  const answers = strategy.prompts.map((_, i) => {
+    const el = document.getElementById(`resp-${i}`);
+    return el ? el.value : '';
+  });
+
+  // Read current responses, merge, write back
+  const { data: d, error: fetchErr } = await db
+    .from('decisions').select('responses').eq('id', currentDecisionId).single();
+  if (fetchErr || !d) { showToast('Save failed — please try again.'); return; }
+
+  const merged = Object.assign({}, d.responses || {}, { [currentStrategyId]: answers });
+
+  const { error: updateErr } = await db
+    .from('decisions')
+    .update({ responses: merged, updated_at: new Date().toISOString() })
+    .eq('id', currentDecisionId);
+
+  if (updateErr) { showToast('Save failed — please try again.'); console.error(updateErr); return; }
+
+  const status = document.getElementById('save-status');
+  status.classList.add('visible');
+  setTimeout(() => status.classList.remove('visible'), 2500);
+
+  if (SOLUTIONS_FEED[currentStrategyId]) {
+    showToast('Thinking saved — solutions list updated ✓');
+  } else {
+    showToast('Thinking saved ✓');
+  }
+}
+
+// clearResponse — UI only, no DB write.
+function clearResponse() {
+  const strategy = STRATEGIES.find(s => s.id === currentStrategyId);
+  strategy.prompts.forEach((_, i) => {
+    const el = document.getElementById(`resp-${i}`);
+    if (el) el.value = '';
+  });
+}
+
+// ═══ NEW DECISION MODAL ════════════════════════════════════════
+function openNewDecisionModal() {
+  document.getElementById('new-decision-name').value = '';
+  document.getElementById('new-decision-desc').value = '';
+  document.getElementById('new-decision-solutions').value = '';
+  document.getElementById('new-decision-modal').classList.add('open');
+  setTimeout(() => document.getElementById('new-decision-name').focus(), 100);
+}
+function closeModal() { document.getElementById('new-decision-modal').classList.remove('open'); }
+
+// createDecision — inserts a new row; user_id is set by a DB default
+// (see SQL below) so RLS can enforce ownership.
+async function createDecision() {
+  const name = document.getElementById('new-decision-name').value.trim();
+  const desc = document.getElementById('new-decision-desc').value.trim();
+  const solutions = document.getElementById('new-decision-solutions').value.trim();
+  if (!name) { showToast('Please give your decision a name.'); return; }
+
+  const { data: d, error } = await db
+    .from('decisions')
+    .insert({ name, description: desc, solutions, responses: {}, grounding: {} })
+    .select()
+    .single();
+
+  if (error || !d) { showToast('Could not create decision — please try again.'); console.error(error); return; }
+
+  closeModal();
+  currentDecisionId = d.id;
+  await showDetail();
+}
+
+// confirmDelete — UI confirm flow unchanged
+function confirmDelete(id, btn) {
+  if (btn.dataset.confirming === 'true') return;
+  btn.dataset.confirming = 'true';
+  btn.textContent = 'Delete?';
+  btn.style.cssText = 'opacity:1;color:#b91c1c;font-size:11px;padding:3px 7px;border:1px solid #fca5a5;border-radius:4px;background:#fef2f2;';
+  const cancel = (e) => {
+    if (!btn.contains(e.target)) {
+      btn.dataset.confirming = 'false';
+      btn.textContent = '×';
+      btn.style.cssText = '';
+      document.removeEventListener('click', cancel);
+    }
+  };
+  setTimeout(() => document.addEventListener('click', cancel), 0);
+  btn.onclick = (e) => { e.stopPropagation(); document.removeEventListener('click', cancel); deleteDecision(id); };
+}
+
+// deleteDecision — deletes the row; RLS prevents deleting other users' rows.
+async function deleteDecision(id) {
+  const { error } = await db.from('decisions').delete().eq('id', id);
+  if (error) { showToast('Delete failed.'); console.error(error); return; }
+  await renderDash();
+}
+
+// ═══ EDIT DECISION MODAL ══════════════════════════════════════
+async function openEditDecisionModal() {
+  const { data: d, error } = await db
+    .from('decisions').select('name, description, solutions').eq('id', currentDecisionId).single();
+  if (error || !d) return;
+  document.getElementById('edit-decision-name').value = d.name || '';
+  document.getElementById('edit-decision-desc').value = d.description || '';
+  document.getElementById('edit-decision-solutions').value = d.solutions || '';
+  document.getElementById('edit-decision-modal').classList.add('open');
+  setTimeout(() => document.getElementById('edit-decision-name').focus(), 100);
+}
+
+function closeEditModal() {
+  document.getElementById('edit-decision-modal').classList.remove('open');
+}
+
+async function saveEditDecision() {
+  const name = document.getElementById('edit-decision-name').value.trim();
+  if (!name) { showToast('Decision name cannot be empty.'); return; }
+
+  const { error } = await db
+    .from('decisions')
+    .update({
+      name,
+      description: document.getElementById('edit-decision-desc').value.trim(),
+      solutions: document.getElementById('edit-decision-solutions').value.trim(),
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', currentDecisionId);
+
+  if (error) { showToast('Update failed.'); console.error(error); return; }
+  closeEditModal();
+  await renderDetail();
+  showToast('Decision updated.');
+}
+
+// ═══ MARK AS DECIDED MODAL ════════════════════════════════════
+async function openDecidedModal() {
+  const { data: d, error } = await db
+    .from('decisions').select('conclusion').eq('id', currentDecisionId).single();
+  if (error || !d) return;
+  document.getElementById('decided-conclusion-input').value = d.conclusion || '';
+  document.getElementById('decided-modal').classList.add('open');
+  setTimeout(() => document.getElementById('decided-conclusion-input').focus(), 100);
+}
+
+function closeDecidedModal() {
+  document.getElementById('decided-modal').classList.remove('open');
+}
+
+async function saveDecided() {
+  const conclusion = document.getElementById('decided-conclusion-input').value.trim();
+  if (!conclusion) { showToast('Please describe your conclusion first.'); return; }
+
+  const { error } = await db
+    .from('decisions')
+    .update({ decided: true, conclusion, decided_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq('id', currentDecisionId);
+
+  if (error) { showToast('Save failed.'); console.error(error); return; }
+  closeDecidedModal();
+  await renderDetail();
+  showToast('Decision marked as decided.');
+}
+
+// ═══ GROUNDING SCREEN ═════════════════════════════════════════
+let grCurrentSection = 0;
+let grCurrentStep = 0;
+const GR_TOTAL_SECTIONS = 6;
+const GR_TOTAL_STEPS = 5;
+
+function openGrounding() {
+  grCurrentSection = 0;
+  grCurrentStep = 0;
+  for (let i = 0; i < GR_TOTAL_SECTIONS; i++) {
+    const sec = document.getElementById('gsec-' + i);
+    if (sec) { sec.classList.remove('visible'); }
+  }
+  document.getElementById('gsec-0').classList.add('visible');
+  for (let i = 0; i < GR_TOTAL_SECTIONS; i++) {
+    const dot = document.getElementById('gdot-' + i);
+    if (dot) { dot.classList.remove('active','done'); }
+  }
+  document.getElementById('gdot-0').classList.add('active');
+  grCurrentStep = 0;
+  for (let i = 0; i < GR_TOTAL_STEPS; i++) {
+    const step = document.getElementById('gstep-' + i);
+    if (step) { step.classList.remove('current','done'); }
+  }
+  document.getElementById('gstep-0').classList.add('current');
+  const exBtn = document.getElementById('gr-exercise-btn');
+  if (exBtn) { exBtn.textContent = 'Next step'; exBtn.disabled = false; }
+  loadGroundingValues();
+  showScreen('screen-grounding');
+}
+
+function closeGrounding() {
+  grSaveToDB();
+  showDetail();
+}
+
+function grNextSection(next) {
+  grSaveCurrentSectionToState();
+  const curDot = document.getElementById('gdot-' + grCurrentSection);
+  if (curDot) { curDot.classList.remove('active'); curDot.classList.add('done'); }
+  document.getElementById('gsec-' + grCurrentSection).classList.remove('visible');
+  grCurrentSection = next;
+  const nextSec = document.getElementById('gsec-' + next);
+  if (nextSec) nextSec.classList.add('visible');
+  const nextDot = document.getElementById('gdot-' + next);
+  if (nextDot) { nextDot.classList.remove('done'); nextDot.classList.add('active'); }
+  window.scrollTo(0, 0);
+}
+
+function grGoToSection(target) {
+  if (target === grCurrentSection) return;
+  grSaveCurrentSectionToState();
+  document.getElementById('gsec-' + grCurrentSection).classList.remove('visible');
+  const curDot = document.getElementById('gdot-' + grCurrentSection);
+  if (curDot) {
+    curDot.classList.remove('active');
+    if (target > grCurrentSection) curDot.classList.add('done');
+  }
+  grCurrentSection = target;
+  document.getElementById('gsec-' + target).classList.add('visible');
+  for (let i = 0; i < GR_TOTAL_SECTIONS; i++) {
+    const dot = document.getElementById('gdot-' + i);
+    if (!dot) continue;
+    dot.classList.remove('active', 'done');
+    if (i < target) dot.classList.add('done');
+    else if (i === target) dot.classList.add('active');
+  }
+  window.scrollTo(0, 0);
+}
+
+function grRepeat() { grNextSection(0); }
+
+async function grFinishAndReturn() {
+  await grSaveToDB();
+  showToast('Grounding notes saved ✓');
+  showDetail();
+  switchTab('strategies', document.querySelectorAll('.detail-tab')[0]);
+}
+
+// grState holds in-memory grounding data during a session; flushed on save.
+let grState = {};
+
+// loadGroundingValues — fetches grounding JSONB from the decision row
+// and populates the form fields.
+async function loadGroundingValues() {
+  if (!currentDecisionId || !currentUser) return;
+
+  const { data: d, error } = await db
+    .from('decisions').select('grounding').eq('id', currentDecisionId).single();
+  if (error || !d) return;
+
+  const gr = d.grounding || {};
+  grState = JSON.parse(JSON.stringify(gr));
+
+  const responses = gr.responses || [];
+  ['fight','flight','freeze','fawn'].forEach(type => {
+    const card = document.getElementById('gr-card-' + type);
+    if (card) { card.classList.toggle('selected', responses.includes(type)); }
+  });
+  const anySelected = responses.length > 0;
+  const recMsg = document.getElementById('gr-recognised-msg');
+  if (recMsg) recMsg.classList.toggle('visible', anySelected);
+  const sensBox = document.getElementById('gr-sensation-box');
+  if (sensBox) sensBox.classList.toggle('visible', anySelected);
+  setVal('gr-sensation-text', gr.sensationText);
+  setVal('gr-sense-see', gr.seeText);
+  setVal('gr-sense-feel', gr.feelText);
+  setVal('gr-sense-hear', gr.hearText);
+  setVal('gr-sense-smell', gr.smellText);
+  setVal('gr-sense-taste', gr.tasteText);
+  setVal('gr-anchor-text', gr.anchorText);
+  setVal('gr-allies-text', gr.alliesText);
+}
+
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el && val) el.value = val;
+}
+
+function grSaveCurrentSectionToState() {
+  if (grCurrentSection === 1) {
+    grState.responses = ['fight','flight','freeze','fawn'].filter(t =>
+      document.getElementById('gr-card-' + t)?.classList.contains('selected')
+    );
+    grState.sensationText = document.getElementById('gr-sensation-text')?.value || '';
+  }
+  if (grCurrentSection === 2) {
+    grState.seeText   = document.getElementById('gr-sense-see')?.value || '';
+    grState.feelText  = document.getElementById('gr-sense-feel')?.value || '';
+    grState.hearText  = document.getElementById('gr-sense-hear')?.value || '';
+    grState.smellText = document.getElementById('gr-sense-smell')?.value || '';
+    grState.tasteText = document.getElementById('gr-sense-taste')?.value || '';
+  }
+  if (grCurrentSection === 3) {
+    grState.anchorText = document.getElementById('gr-anchor-text')?.value || '';
+    grState.alliesText = document.getElementById('gr-allies-text')?.value || '';
+  }
+}
+
+// grSaveToDB — collects all grounding fields and writes to the
+// grounding JSONB column on the decision row.
+async function grSaveToDB() {
+  grState.responses = ['fight','flight','freeze','fawn'].filter(t =>
+    document.getElementById('gr-card-' + t)?.classList.contains('selected')
+  );
+  grState.sensationText = document.getElementById('gr-sensation-text')?.value || '';
+  grState.seeText   = document.getElementById('gr-sense-see')?.value || '';
+  grState.feelText  = document.getElementById('gr-sense-feel')?.value || '';
+  grState.hearText  = document.getElementById('gr-sense-hear')?.value || '';
+  grState.smellText = document.getElementById('gr-sense-smell')?.value || '';
+  grState.tasteText = document.getElementById('gr-sense-taste')?.value || '';
+  grState.anchorText = document.getElementById('gr-anchor-text')?.value || '';
+  grState.alliesText = document.getElementById('gr-allies-text')?.value || '';
+
+  const { error } = await db
+    .from('decisions')
+    .update({ grounding: grState, updated_at: new Date().toISOString() })
+    .eq('id', currentDecisionId);
+
+  if (error) { console.error('grSaveToDB error:', error); }
+}
+
+function renderGroundingTabState(d) {
+  // Static tab intro panel — no dynamic rendering needed.
+}
+
+function grToggleResponse(type) {
+  const card = document.getElementById('gr-card-' + type);
+  if (!card) return;
+  card.classList.toggle('selected');
+  const anySelected = document.querySelectorAll('.gr-rcard.selected').length > 0;
+  const recMsg = document.getElementById('gr-recognised-msg');
+  if (recMsg) recMsg.classList.toggle('visible', anySelected);
+  const sensBox = document.getElementById('gr-sensation-box');
+  if (sensBox) sensBox.classList.toggle('visible', anySelected);
+}
+
+function grAdvanceStep() {
+  const step = document.getElementById('gstep-' + grCurrentStep);
+  if (step) { step.classList.remove('current'); step.classList.add('done'); }
+  grCurrentStep++;
+  if (grCurrentStep < GR_TOTAL_STEPS) {
+    const next = document.getElementById('gstep-' + grCurrentStep);
+    if (next) next.classList.add('current');
+  } else {
+    const btn = document.getElementById('gr-exercise-btn');
+    if (btn) { btn.textContent = 'Exercise complete ✓'; btn.disabled = true; }
+  }
+}
+
+// ═══ UTILITIES ════════════════════════════════════════════════
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══ KEYBOARD & EVENTS ════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeEditModal(); closeDecidedModal(); }
+  if (e.key === 'Enter' && e.target.tagName === 'INPUT' && document.getElementById('screen-auth').classList.contains('active')) authSubmit();
+  if (e.key === 'Enter' && e.target.id === 'new-decision-name') document.getElementById('new-decision-desc').focus();
+});
+document.getElementById('new-decision-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('new-decision-modal')) closeModal();
+});
+document.getElementById('edit-decision-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('edit-decision-modal')) closeEditModal();
+});
+document.getElementById('decided-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('decided-modal')) closeDecidedModal();
+});
+
+// Expose to global scope for inline onclick handlers (unchanged)
+window.authSubmit = authSubmit;
+window.signOut = signOut;
+window.openDecision = openDecision;
+window.openStrategy = openStrategy;
+window.openNewDecisionModal = openNewDecisionModal;
+window.closeModal = closeModal;
+window.createDecision = createDecision;
+window.confirmDelete = confirmDelete;
+window.openEditDecisionModal = openEditDecisionModal;
+window.closeEditModal = closeEditModal;
+window.saveEditDecision = saveEditDecision;
+window.openDecidedModal = openDecidedModal;
+window.closeDecidedModal = closeDecidedModal;
+window.saveDecided = saveDecided;
+window.deleteDecision = deleteDecision;
+window.saveResponse = saveResponse;
+window.clearResponse = clearResponse;
+window.switchTab = switchTab;
+window.grGoToSection = grGoToSection;
+</script>
+</body>
+</html>
