@@ -1779,8 +1779,18 @@ let currentStrategyId = null;
 
 // ─── On page load: restore session if one exists ───────────────
 (async function init() {
+  // Detect password-recovery redirect before checking session — Supabase sets
+  // type=recovery in the URL hash when the user clicks a reset-password email link.
+  // Without this check, getSession() sees a valid session and sends the user
+  // to the dashboard, bypassing the reset form entirely.
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const isRecovery = hashParams.get('type') === 'recovery';
+
   const { data: { session } } = await db.auth.getSession();
-  if (session) {
+
+  if (isRecovery) {
+    showPasswordReset();
+  } else if (session) {
     currentUser = session.user;
     await showDash();
   } else {
