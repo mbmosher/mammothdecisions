@@ -757,6 +757,67 @@
     line-height: 1.6;
   }
 
+  .header-menu { position: relative; }
+  .header-menu-btn {
+    background: none;
+    border: 1.5px solid var(--beige-mid);
+    color: var(--text-light);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .header-menu-btn:hover { border-color: var(--sage-light); color: var(--sage-deep); }
+  .header-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--white);
+    border: 1px solid var(--beige-mid);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    min-width: 160px;
+    z-index: 300;
+    overflow: hidden;
+  }
+  .header-dropdown.open { display: block; }
+  .header-dropdown button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 12px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-dark);
+    cursor: pointer;
+  }
+  .header-dropdown button:hover { background: var(--sage-pale); }
+  .header-dropdown button.danger { color: #b91c1c; }
+  .header-dropdown button.danger:hover { background: #fef2f2; }
+  .profile-section {
+    border-top: 1px solid var(--beige-mid);
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+  .profile-section:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+  .profile-section h3 { font-size: 15px; font-weight: 500; color: var(--text-dark); margin-bottom: 14px; }
+  .profile-current { font-size: 13px; color: var(--text-light); margin-bottom: 12px; }
+  .profile-msg {
+    font-size: 13px;
+    margin: 8px 0;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    display: none;
+  }
+  .profile-msg.error { display: block; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+  .profile-msg.success { display: block; background: var(--sage-pale); border: 1px solid var(--sage-light); color: var(--sage-deep); }
+
   .signout-btn {
     background: none;
     border: 1.5px solid var(--beige-mid);
@@ -1311,7 +1372,13 @@
 <div id="screen-dash" class="screen">
   <div class="app-header">
     <div class="logo"><span class="logo-icon">🦣</span> Mammoth</div>
-    <button class="signout-btn" onclick="signOut()">Sign out</button>
+    <div class="header-menu">
+      <button class="header-menu-btn" onclick="toggleHeaderMenu()" aria-label="Menu">☰</button>
+      <div class="header-dropdown" id="header-dropdown">
+        <button onclick="openProfile()">Profile</button>
+        <button class="danger" onclick="closeHeaderMenu(); signOut()">Sign out</button>
+      </div>
+    </div>
   </div>
   <div class="main-content">
     <div class="dash-welcome">
@@ -1712,8 +1779,20 @@ let currentStrategyId = null;
 
 // ─── On page load: restore session if one exists ───────────────
 (async function init() {
+  // Detect password-recovery redirect before checking session — Supabase sets
+  // type=recovery in the URL hash when the user clicks a reset-password email link.
+  // Without this check, getSession() sees a valid session and sends the user
+  // to the dashboard, bypassing the reset form entirely.
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const isRecovery = hashParams.get('type') === 'recovery';
+
   const { data: { session } } = await db.auth.getSession();
-  if (session) {
+
+  if (isRecovery) {
+    currentUser = session?.user ?? null;
+    history.replaceState(null, '', window.location.pathname); // clear recovery token from URL
+    showPasswordReset();
+  } else if (session) {
     currentUser = session.user;
     await showDash();
   } else {
@@ -1997,6 +2076,81 @@ async function submitPasswordReset() {
     return;
   }
   await showDash();
+}
+
+// ═══ HEADER MENU ══════════════════════════════════════════════
+
+function toggleHeaderMenu() {
+  document.getElementById('header-dropdown').classList.toggle('open');
+}
+function closeHeaderMenu() {
+  document.getElementById('header-dropdown').classList.remove('open');
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.header-menu')) closeHeaderMenu();
+});
+
+// ═══ PROFILE MODAL ════════════════════════════════════════════
+
+function openProfile() {
+  closeHeaderMenu();
+  document.getElementById('profile-current-email').textContent = currentUser?.email || '';
+  document.getElementById('profile-new-email').value = '';
+  document.getElementById('profile-new-pw').value = '';
+  document.getElementById('profile-confirm-pw').value = '';
+  document.getElementById('profile-email-msg').className = 'profile-msg';
+  document.getElementById('profile-pw-msg').className = 'profile-msg';
+  document.getElementById('profile-modal').classList.add('open');
+}
+function closeProfile() {
+  document.getElementById('profile-modal').classList.remove('open');
+}
+
+async function updateProfileEmail() {
+  const email = document.getElementById('profile-new-email').value.trim().toLowerCase();
+  const msg = document.getElementById('profile-email-msg');
+  msg.className = 'profile-msg';
+  if (!email || !email.includes('@')) {
+    msg.textContent = 'Please enter a valid email address.';
+    msg.className = 'profile-msg error';
+    return;
+  }
+  const { error } = await db.auth.updateUser({ email });
+  if (error) {
+    msg.textContent = error.message;
+    msg.className = 'profile-msg error';
+    return;
+  }
+  msg.textContent = 'Confirmation sent — check your new inbox to complete the change.';
+  msg.className = 'profile-msg success';
+  document.getElementById('profile-new-email').value = '';
+}
+
+async function updateProfilePassword() {
+  const pw = document.getElementById('profile-new-pw').value;
+  const confirm = document.getElementById('profile-confirm-pw').value;
+  const msg = document.getElementById('profile-pw-msg');
+  msg.className = 'profile-msg';
+  if (!pw || pw.length < 6) {
+    msg.textContent = 'Password must be at least 6 characters.';
+    msg.className = 'profile-msg error';
+    return;
+  }
+  if (pw !== confirm) {
+    msg.textContent = 'Passwords do not match.';
+    msg.className = 'profile-msg error';
+    return;
+  }
+  const { error } = await db.auth.updateUser({ password: pw });
+  if (error) {
+    msg.textContent = error.message;
+    msg.className = 'profile-msg error';
+    return;
+  }
+  msg.textContent = 'Password updated successfully.';
+  msg.className = 'profile-msg success';
+  document.getElementById('profile-new-pw').value = '';
+  document.getElementById('profile-confirm-pw').value = '';
 }
 
 // ═══ PWA INSTALL ══════════════════════════════════════════════
@@ -2719,6 +2873,40 @@ window.clearResponse = clearResponse;
 window.switchTab = switchTab;
 window.grGoToSection = grGoToSection;
 </script>
+
+<!-- ═══════════════ PROFILE MODAL ═══════════════ -->
+<div class="modal-overlay" id="profile-modal" onclick="if(event.target===this)closeProfile()">
+  <div class="modal-box" style="max-width:440px;">
+    <button class="modal-close" onclick="closeProfile()">✕</button>
+    <h2>Your profile</h2>
+    <p class="modal-subtitle">Update your email address or password.</p>
+
+    <div class="profile-section">
+      <h3>Email address</h3>
+      <p class="profile-current">Current: <strong id="profile-current-email"></strong></p>
+      <div class="form-group">
+        <label>New email</label>
+        <input type="email" id="profile-new-email" placeholder="new@example.com" autocomplete="email">
+      </div>
+      <div class="profile-msg" id="profile-email-msg"></div>
+      <button class="btn-primary" style="width:auto;padding:10px 24px;" onclick="updateProfileEmail()">Update email</button>
+    </div>
+
+    <div class="profile-section">
+      <h3>Password</h3>
+      <div class="form-group">
+        <label>New password</label>
+        <input type="password" id="profile-new-pw" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label>Confirm new password</label>
+        <input type="password" id="profile-confirm-pw" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="profile-msg" id="profile-pw-msg"></div>
+      <button class="btn-primary" style="width:auto;padding:10px 24px;" onclick="updateProfilePassword()">Update password</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════ IOS INSTALL MODAL ═══════════════ -->
 <div id="ios-install-modal"
