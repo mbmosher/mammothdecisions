@@ -741,6 +741,22 @@
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
 
+  .app-footer {
+    text-align: center;
+    padding: 32px 24px 40px;
+    border-top: 1px solid var(--beige-mid);
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .app-footer .copyright {
+    font-size: 12px;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+
   .signout-btn {
     background: none;
     border: 1.5px solid var(--beige-mid);
@@ -1304,6 +1320,12 @@
     </div>
     <div id="decisions-container"></div>
   </div>
+  <footer class="app-footer">
+    <button class="install-btn" onclick="triggerInstall()">
+      <span class="install-icons">💻🦣📱</span>Add to your device
+    </button>
+    <p class="copyright">© Matthew Mosher and Michael J. Bernstein, 2026&nbsp;&nbsp;|&nbsp;&nbsp;All rights reserved.</p>
+  </footer>
 </div>
 
 <!-- ═══════════════ DECISION DETAIL SCREEN ═══════════════ -->
@@ -1994,6 +2016,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 if (_isIOS && !_isStandalone) {
   const el = document.getElementById('install-prompt');
   if (el) el.style.display = 'block';
+}
+
+if (_isStandalone) {
+  document.querySelectorAll('.install-btn').forEach(btn => btn.style.display = 'none');
 }
 
 async function triggerInstall() {
