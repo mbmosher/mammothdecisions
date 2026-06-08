@@ -1789,6 +1789,8 @@ let currentStrategyId = null;
   const { data: { session } } = await db.auth.getSession();
 
   if (isRecovery) {
+    currentUser = session?.user ?? null;
+    history.replaceState(null, '', window.location.pathname); // clear recovery token from URL
     showPasswordReset();
   } else if (session) {
     currentUser = session.user;
