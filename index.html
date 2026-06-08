@@ -1805,7 +1805,6 @@ const SOLUTIONS_FEED = {
 };
 
 // ═══ AUTH ═════════════════════════════════════════════════════
-// Magic-link only. One flow handles both new and returning users.
 
 function clearAuthError() {
   const el = document.getElementById('auth-error');
@@ -1851,6 +1850,27 @@ async function forgotPassword(e) {
     </p>`;
 }
 
+function showConfirmationCard(email) {
+  document.querySelector('.auth-card').innerHTML = `
+    <h2 style="margin-bottom:16px;">Check your email ✉️</h2>
+    <p style="color:var(--text-mid);line-height:1.7;">
+      We sent a confirmation link to <strong>${esc(email)}</strong>.<br>
+      Click it to activate your account.
+    </p>
+    <p style="margin-top:20px;color:var(--text-mid);font-size:14px;">
+      Didn't get it? <a href="#" style="color:var(--sage);" onclick="resendConfirmation(event,'${esc(email)}')">Send again</a>
+    </p>`;
+}
+
+async function resendConfirmation(e, email) {
+  e.preventDefault();
+  const link = e.target;
+  link.textContent = 'Sending…';
+  const { error } = await db.auth.resend({ type: 'signup', email });
+  link.textContent = error ? 'Error — try again' : 'Sent!';
+  if (!error) setTimeout(() => { link.textContent = 'Send again'; }, 4000);
+}
+
 async function authSubmit() {
   clearAuthError();
   const email = document.getElementById('auth-email').value.trim().toLowerCase();
@@ -1882,12 +1902,7 @@ async function authSubmit() {
     if (error) { showAuthError(error.message); return; }
     const { data: { session } } = await db.auth.getSession();
     if (!session) {
-      document.querySelector('.auth-card').innerHTML = `
-        <h2 style="margin-bottom:16px;">Check your email ✉️</h2>
-        <p style="color:var(--text-mid);line-height:1.7;">
-          We sent a confirmation link to <strong>${esc(email)}</strong>.<br>
-          Click it to activate your account.
-        </p>`;
+      showConfirmationCard(email);
     }
   } else {
     btn.textContent = 'Signing in…';
