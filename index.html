@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mammoth — Make Better Decisions</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#4a6b4e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mammoth">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -192,6 +197,23 @@
     margin-bottom: 16px;
     display: none;
   }
+
+  .install-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--white);
+    border: 1.5px solid var(--beige-mid);
+    border-radius: 99px;
+    padding: 9px 22px;
+    color: var(--text-mid);
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .install-btn:hover { border-color: var(--sage); background: var(--sage-pale); }
+  .install-btn .install-icons { font-size: 18px; letter-spacing: 1px; margin-right: 8px; }
 
   /* ── DASHBOARD ── */
   .dash-welcome {
@@ -1262,6 +1284,11 @@
       </div>
     </div>
   </div>
+  <div id="install-prompt" style="display:none; text-align:center; padding:0 0 32px;">
+    <button class="install-btn" onclick="triggerInstall()">
+      <span class="install-icons">💻🦣📱</span>Add to your device
+    </button>
+  </div>
 </div>
 
 <!-- ═══════════════ DASHBOARD SCREEN ═══════════════ -->
@@ -1950,6 +1977,39 @@ async function submitPasswordReset() {
   await showDash();
 }
 
+// ═══ PWA INSTALL ══════════════════════════════════════════════
+
+let _pwaPrompt = null;
+const _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !/crios|fxios/i.test(navigator.userAgent);
+const _isStandalone = ('standalone' in navigator && navigator.standalone) ||
+                       window.matchMedia('(display-mode: standalone)').matches;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _pwaPrompt = e;
+  const el = document.getElementById('install-prompt');
+  if (el) el.style.display = 'block';
+});
+
+if (_isIOS && !_isStandalone) {
+  const el = document.getElementById('install-prompt');
+  if (el) el.style.display = 'block';
+}
+
+async function triggerInstall() {
+  if (_pwaPrompt) {
+    await _pwaPrompt.prompt();
+    const { outcome } = await _pwaPrompt.userChoice;
+    _pwaPrompt = null;
+    if (outcome === 'accepted') {
+      document.getElementById('install-prompt').style.display = 'none';
+    }
+  } else if (_isIOS) {
+    const modal = document.getElementById('ios-install-modal');
+    if (modal) modal.style.display = 'flex';
+  }
+}
+
 // signOut — ends the Supabase session and returns to auth screen.
 async function signOut() {
   await db.auth.signOut();
@@ -2633,5 +2693,19 @@ window.clearResponse = clearResponse;
 window.switchTab = switchTab;
 window.grGoToSection = grGoToSection;
 </script>
+
+<!-- ═══════════════ IOS INSTALL MODAL ═══════════════ -->
+<div id="ios-install-modal"
+     onclick="if(event.target===this)this.style.display='none'"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:flex-end; justify-content:center;">
+  <div style="background:var(--white); border-radius:var(--radius) var(--radius) 0 0; padding:28px 24px 40px; max-width:420px; width:100%;">
+    <h3 style="font-family:'Lora',serif; font-size:18px; margin-bottom:14px; color:var(--text-dark);">Add to your device</h3>
+    <p style="color:var(--text-mid); line-height:1.9; margin-bottom:22px;">
+      1. Tap the <strong>Share</strong> button ⎙ at the bottom of Safari<br>
+      2. Scroll down and tap <strong>"Add to Home Screen"</strong>
+    </p>
+    <button class="btn-primary" onclick="document.getElementById('ios-install-modal').style.display='none'">Got it</button>
+  </div>
+</div>
 </body>
 </html>

@@ -3,7 +3,7 @@
 // Reads index.html, injects environment variables, writes dist/index.html.
 // Exits non-zero on any error so Cloudflare fails the build visibly.
 
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'fs';
 
 // ── 1. Require both env vars ──────────────────────────────────────────────────
 
@@ -77,4 +77,13 @@ try {
 console.log('[build] Placeholders injected:');
 Object.keys(PLACEHOLDERS).forEach(p => console.log(`  ✓ ${p}`));
 console.log('[build] Output written to dist/index.html');
+
+// ── 7. Copy static assets ─────────────────────────────────────────────────────
+
+const STATIC = ['manifest.json', 'icon.svg'];
+for (const file of STATIC) {
+  copyFileSync(file, `dist/${file}`);
+  console.log(`[build] Copied ${file} → dist/${file}`);
+}
+
 console.log('[build] Build complete.');
