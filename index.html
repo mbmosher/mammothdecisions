@@ -681,6 +681,30 @@
   .strat-cat-header { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1.5px solid var(--beige-mid); }
   .strat-cat-label { font-size: 14px; font-weight: 500; color: var(--sage-deep); font-family: "DM Sans", sans-serif; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
   .strat-cat-tagline { font-size: 13px; color: var(--text-light); font-style: italic; }
+  /* ── SOLUTIONS STRIKETHROUGH ── */
+  .sol-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-mid);
+    line-height: 1.5;
+    cursor: pointer;
+    user-select: none;
+    padding: 3px 4px;
+    border-radius: 4px;
+    transition: opacity 0.15s;
+  }
+  .sol-item:hover { opacity: 0.75; }
+  .sol-item.struck .sol-text {
+    text-decoration: line-through;
+    color: var(--text-light);
+    opacity: 0.6;
+  }
+  .sol-bullet { color: var(--sage); flex-shrink: 0; font-size: 12px; }
+  .sol-item.struck .sol-bullet { color: var(--beige-dark); }
+  .sol-source-badge { font-size: 11px; margin-left: 4px; opacity: 0.5; }
+  .sol-hint { font-size: 11px; color: var(--text-light); margin-top: 6px; font-style: italic; }
   /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
     .landing-hero h1 { font-size: 30px; }
@@ -2264,8 +2288,12 @@ async function renderDash() {
 // ═══ SOLUTIONS LIST (pure UI, unchanged logic) ════════════════
 function renderSolutionsList(d, el) {
   const lines = [];
+  const struck = d.solutions_struck || {};
+
   if (d.solutions && d.solutions.trim()) {
-    d.solutions.split('\n').forEach(l => { if (l.trim()) lines.push({ text: l.trim(), source: 'manual' }); });
+    d.solutions.split('\n').forEach((l, i) => {
+      if (l.trim()) lines.push({ text: l.trim(), source: 'manual', key: 'manual_' + i });
+    });
   }
   Object.entries(SOLUTIONS_FEED).forEach(([stratId, promptIdxs]) => {
     const answers = d.responses && d.responses[stratId];
@@ -2273,27 +2301,55 @@ function renderSolutionsList(d, el) {
     promptIdxs.forEach(idx => {
       const ans = answers[idx];
       if (!ans || !ans.trim()) return;
-      ans.split('\n').forEach(l => {
-        if (l.trim()) lines.push({ text: l.trim(), source: stratId });
+      ans.split('\n').forEach((l, li) => {
+        if (l.trim()) lines.push({ text: l.trim(), source: stratId, key: stratId + '_' + idx + '_' + li });
       });
     });
   });
+
   if (lines.length === 0) { el.style.display = 'none'; return; }
+
   el.style.display = 'block';
-  const sourceLabel = { 'manual': '', 'widen-options': '🔭', 'combine-options': '🔀' };
+  const sourceLabel = { manual: '', 'widen-options': '🔭', 'combine-options': '🔀' };
+
   let html = '<span style="font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-light);font-weight:500;">Possible solutions</span>';
-  html += '<ul style="margin-top:8px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:5px;">';
+  html += '<ul style="margin-top:8px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:2px;">';
   lines.forEach(item => {
-    const badge = sourceLabel[item.source] ? `<span style="font-size:11px;margin-left:6px;opacity:0.55;">${sourceLabel[item.source]}</span>` : '';
-    html += `<li style="display:flex;align-items:baseline;gap:8px;font-size:14px;color:var(--text-mid);line-height:1.5;">
-      <span style="color:var(--sage);flex-shrink:0;font-size:12px;margin-top:2px;">●</span>
-      <span>${esc(item.text)}${badge}</span>
+    const isStruck = !!struck[item.key];
+    const badge = sourceLabel[item.source] ? `<span class="sol-source-badge">${sourceLabel[item.source]}</span>` : '';
+    html += `<li class="sol-item${isStruck ? ' struck' : ''}" onclick="toggleSolutionStruck('${item.key}')">
+      <span class="sol-bullet">●</span>
+      <span class="sol-text">${esc(item.text)}${badge}</span>
     </li>`;
   });
   html += '</ul>';
+  html += '<p class="sol-hint">Click any solution to strike it through — struck items stay visible as part of your process.</p>';
   el.innerHTML = html;
 }
+async function toggleSolutionStruck(key) {
+  const { data: d, error } = await db
+    .from('decisions').select('solutions_struck').eq('id', currentDecisionId).single();
+  if (error || !d) return;
 
+  const struck = Object.assign({}, d.solutions_struck || {});
+  if (struck[key]) {
+    delete struck[key];
+  } else {
+    struck[key] = true;
+  }
+
+  const { error: updateErr } = await db
+    .from('decisions')
+    .update({ solutions_struck: struck, updated_at: new Date().toISOString() })
+    .eq('id', currentDecisionId);
+
+  if (updateErr) { console.error(updateErr); return; }
+
+  // Re-fetch and re-render just the solutions panel
+  const { data: fresh } = await db
+    .from('decisions').select('solutions, responses, solutions_struck').eq('id', currentDecisionId).single();
+  if (fresh) renderSolutionsList(fresh, document.getElementById('detail-solutions'));
+}
 // ═══ DECISION DETAIL ══════════════════════════════════════════
 async function openDecision(id) {
   currentDecisionId = id;
@@ -2462,15 +2518,38 @@ async function openStrategy(stratId) {
       <div class="prompt-q">${esc(p)}</div>
       <div class="response-area" style="margin-top:12px;">
         <label>Your thinking</label>
-        <textarea id="resp-${i}" placeholder="Write your honest thoughts here…">${esc(saved[i] || '')}</textarea>
-      </div>
+        <textarea id="resp-${i}" placeholder="Write your honest thoughts here…" onblur="autoSaveResponse()">${esc(saved[i] || '')}</textarea>      </div>
     </div>`;
   });
   document.getElementById('ws-prompts').innerHTML = html;
   document.getElementById('save-status').classList.remove('visible');
   showScreen('screen-workspace');
 }
-
+// autoSaveResponse — silent save triggered by textarea blur; no navigation or toast.
+async function autoSaveResponse() {
+  if (!currentStrategyId || !currentDecisionId || !currentUser) return;
+  const strategy = STRATEGIES.find(s => s.id === currentStrategyId);
+  if (!strategy) return;
+  const answers = strategy.prompts.map((_, i) => {
+    const el = document.getElementById(`resp-${i}`);
+    return el ? el.value : '';
+  });
+  const { data: d, error: fetchErr } = await db
+    .from('decisions').select('responses').eq('id', currentDecisionId).single();
+  if (fetchErr || !d) return;
+  const merged = Object.assign({}, d.responses || {}, { [currentStrategyId]: answers });
+  const { error: updateErr } = await db
+    .from('decisions')
+    .update({ responses: merged, updated_at: new Date().toISOString() })
+    .eq('id', currentDecisionId);
+  if (updateErr) { console.error('autoSave error:', updateErr); return; }
+  const status = document.getElementById('save-status');
+  if (status) {
+    status.classList.add('visible');
+    setTimeout(() => status.classList.remove('visible'), 1200);
+  }
+}
+  
 // saveResponse — fetches the current responses JSONB column, merges
 // in the new answers for this strategy, then writes back atomically.
 async function saveResponse() {
@@ -2498,11 +2577,8 @@ async function saveResponse() {
   status.classList.add('visible');
   setTimeout(() => status.classList.remove('visible'), 2500);
 
-  if (SOLUTIONS_FEED[currentStrategyId]) {
-    showToast('Thinking saved — solutions list updated ✓');
-  } else {
-    showToast('Thinking saved ✓');
-  }
+  showToast('Thinking saved ✓');
+  await showDetail();
 }
 
 // clearResponse — UI only, no DB write.
@@ -2872,6 +2948,8 @@ window.saveResponse = saveResponse;
 window.clearResponse = clearResponse;
 window.switchTab = switchTab;
 window.grGoToSection = grGoToSection;
+window.toggleSolutionStruck = toggleSolutionStruck;
+window.autoSaveResponse = autoSaveResponse;
 </script>
 
 <!-- ═══════════════ PROFILE MODAL ═══════════════ -->
